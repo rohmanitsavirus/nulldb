@@ -9,13 +9,13 @@ rvm:
   - 2.2.5
   - 2.3.1
   - jruby
-  - rbx
+  - rbx-2
 
 matrix:
   fast_finish: true
   allow_failures:
     - rvm: jruby
-    - rvm: rbx
+    - rvm: rbx-2
   exclude:
     - rvm: 1.9.3
       gemfile: gemfiles/activerecord_master.gemfile
