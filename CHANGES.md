@@ -1,6 +1,14 @@
 Unreleased
 ----------
 
+0.5.0 (2020-10-15)
+-----------
+
+- *Breaking* Drop support to Ruby 2.2, 2.3, 2.4
+- *Breaking* Drop support to Rails 2.X, 3.X, 4.X, 5.0, 5.1
+- Drop support to old versions of Ruby and Rails. #96
+- Added support for postgres column types included jsonb and ability to delete columns #94
+
 0.4.0 (2019-07-22)
 -----------
 
