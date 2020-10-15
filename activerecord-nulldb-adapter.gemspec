@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.version = NullDB::VERSION
 
   s.require_paths = ["lib"]
-  s.authors = ["Avdi Grimm", "Myron Marston"]
+  s.authors = ["Avdi Grimm", "Myron Marston", "Danilo Cabello"]
   s.summary = "The Null Object pattern as applied to ActiveRecord database adapters"
   s.description = "A database backend that translates database interactions into no-ops. Using NullDB enables you to test your model business logic - including after_save hooks - without ever touching a real database."
-  s.email = "myron.marston@gmail.com"
+  s.email = "cabello@users.noreply.github.com"
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
