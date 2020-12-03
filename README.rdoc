@@ -46,10 +46,16 @@ RAILS_ROOT/db/schema.rb.  You can override that by setting the
 
 NullDB comes with RSpec integration.  To replace the database with
 NullDB in all of your specs, put the following in your
-spec/spec_helper:
+spec/rails_helper:
 
   require 'nulldb_rspec'
   include NullDB::RSpec::NullifiedDatabase
+
+after you load your rails environment 
+
+  require File.expand_path('../config/environment', __dir__)
+
+otherwise you will encounter issues such as (bug)[https://github.com/nulldb/nulldb/pull/90#issuecomment-496690958].
 
 Or if you just want to use NullDB in a specific spec context, you can
 include the same module inside a context:
