@@ -129,7 +129,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
     if table = @tables[table_name]
       table.columns.map do |col_def|
-        col_args = new_column_arguments(col_def)
+        col_args = default_column_arguments(col_def)
         ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(*col_args)
       end
     else
@@ -306,30 +306,11 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     end
   end
 
-  def new_column_arguments(col_def)
-    args_with_optional_cast_type(col_def)
-  end
-
-  def args_with_optional_cast_type(col_def)
-    default_column_arguments(col_def).tap do |args|
-      if defined?(ActiveRecord::ConnectionAdapters::SqlTypeMetadata)
-        meta = ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type)
-        args.insert(2, meta_with_limit!(meta, col_def))
-      else
-        args[2] = args[2].to_s + "(#{col_def.limit})" if col_def.limit
-      end
-    end
-  end
-
-  def meta_with_limit!(meta, col_def)
-    meta.instance_variable_set('@limit', col_def.limit)
-    meta
-  end
-
   def default_column_arguments(col_def)
     [
       col_def.name.to_s,
       col_def.default,
+      ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type, limit: col_def.limit),
       col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
     ]
   end
