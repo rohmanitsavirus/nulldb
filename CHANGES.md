@@ -1,6 +1,11 @@
 Unreleased
 ----------
 
+0.6.0 (2021-01-08)
+-----------
+
+- *Breaking* Finish dropping support to Rails <= 5.1 by removing custom code for these versions. #101
+
 0.5.0 (2020-10-15)
 -----------
 
