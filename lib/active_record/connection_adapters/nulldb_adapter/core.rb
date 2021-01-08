@@ -338,19 +338,13 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     [nil, @logger, @config]
   end
 
-  # 4.2 introduced ActiveRecord::Type
-  # https://github.com/rails/rails/tree/4-2-stable/activerecord/lib/active_record
   def register_types
-    if ActiveRecord::VERSION::MAJOR < 5
-      type_map.register_type(:primary_key, ActiveRecord::Type::Integer.new)
-    else
-      require 'active_model/type'
-      ActiveRecord::Type.register(
-        :primary_key,
-        ActiveModel::Type::Integer,
-        adapter: adapter_name,
-        override: true
-      )
-    end
+    require 'active_model/type'
+    ActiveRecord::Type.register(
+      :primary_key,
+      ActiveModel::Type::Integer,
+      adapter: adapter_name,
+      override: true
+    )
   end
 end
