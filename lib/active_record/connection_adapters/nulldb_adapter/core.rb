@@ -94,33 +94,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     index = @indexes[table_name].reject! { |index| index.name == index_name }
   end
 
-  unless instance_methods.include? :add_index_options
-    def add_index_options(table_name, column_name, options = {})
-      column_names = Array.wrap(column_name)
-      index_name   = index_name(table_name, :column => column_names)
-
-      index_type = options
-
-      if index_name.length > index_name_length
-        raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' is too long; the limit is #{index_name_length} characters"
-      end
-      if index_name_exists?(table_name, index_name, false)
-        raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' already exists"
-      end
-      index_columns = quoted_columns_for_index(column_names, options).join(", ")
-
-      [index_name, index_type, index_columns]
-    end
-  end
-
-  unless instance_methods.include? :index_name_exists?
-    def index_name_exists?(table_name, index_name, default)
-      return default unless respond_to?(:indexes)
-      index_name = index_name.to_s
-      indexes(table_name).detect { |i| i.name == index_name }
-    end
-  end
-
   def add_fk_constraint(*args)
     # NOOP
   end
