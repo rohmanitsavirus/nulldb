@@ -315,8 +315,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       if defined?(ActiveRecord::ConnectionAdapters::SqlTypeMetadata)
         meta = ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type)
         args.insert(2, meta_with_limit!(meta, col_def))
-      elsif initialize_column_with_cast_type?
-        args.insert(2, meta_with_limit!(lookup_cast_type(col_def.type), col_def))
       else
         args[2] = args[2].to_s + "(#{col_def.limit})" if col_def.limit
       end
@@ -334,10 +332,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       col_def.default,
       col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
     ]
-  end
-
-  def initialize_column_with_cast_type?
-    ::ActiveRecord::VERSION::MAJOR == 4 && ::ActiveRecord::VERSION::MINOR >= 2
   end
 
   def initialize_args
