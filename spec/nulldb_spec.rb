@@ -291,8 +291,13 @@ describe "NullDB" do
 end
 
 # need a fallback db for contextual nullification
-db_config = { 'test' => {'adapter' => 'nulldb'} }
-ActiveRecord::Base.configurations = ActiveRecord::DatabaseConfigurations.new(db_config)
+if defined?(ActiveRecord::DatabaseConfigurations)
+  db_config = { 'test' => {'adapter' => 'nulldb'} }
+  ActiveRecord::Base.configurations = ActiveRecord::DatabaseConfigurations.new(db_config)
+else
+  # Support ActiveRecord 5
+  ActiveRecord::Base.configurations['test'] = {'adapter' => 'nulldb'}
+end
 
 describe NullDB::RSpec::NullifiedDatabase do
   describe 'have_executed rspec matcher' do
