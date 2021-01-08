@@ -34,8 +34,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
         self.class.const_get(config[:table_definition_class_name]))
     end
 
-    register_types unless NullDB::LEGACY_ACTIVERECORD || \
-                          ActiveRecord::VERSION::MAJOR < 4
+    register_types
   end
 
   # A log of every statement that has been "executed" by this connection adapter
