@@ -364,14 +364,14 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       [
         col_def.name.to_s,
         col_def.default,
-        col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true 
+        col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
       ]
     else
       [
         col_def.name.to_s,
         col_def.default,
         col_def.type,
-        col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true 
+        col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
       ]
     end
   end
@@ -390,7 +390,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def register_types
     if ActiveRecord::VERSION::MAJOR < 5
       type_map.register_type(:primary_key, ActiveRecord::Type::Integer.new)
-    else      
+    else
       require 'active_model/type'
       ActiveRecord::Type.register(
         :primary_key,
