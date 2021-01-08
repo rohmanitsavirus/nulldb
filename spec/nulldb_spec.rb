@@ -11,12 +11,7 @@ require 'active_record'
 require 'active_record/version'
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 
-if ActiveRecord::VERSION::MAJOR > 2
-  require 'rspec' # rspec 2
-else
-  require 'spec' # rspec 1
-end
-
+require 'rspec'
 require 'nulldb_rspec'
 
 class Employee < ActiveRecord::Base
@@ -492,11 +487,9 @@ describe 'adapter-specific extensions' do
     should_have_column(ExtendedModel, :jsonb_column, :json)
   end
 
-  if ActiveRecord::VERSION::MAJOR > 4
-    it 'registers a primary_key type' do
-      expect(ActiveRecord::Type.lookup(:primary_key, adapter: 'NullDB'))
-        .to be_a(ActiveModel::Type::Integer)
-    end
+  it 'registers a primary_key type' do
+    expect(ActiveRecord::Type.lookup(:primary_key, adapter: 'NullDB'))
+      .to be_a(ActiveModel::Type::Integer)
   end
 end
 

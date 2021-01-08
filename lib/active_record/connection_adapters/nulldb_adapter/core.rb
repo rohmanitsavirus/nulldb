@@ -34,8 +34,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
         self.class.const_get(config[:table_definition_class_name]))
     end
 
-    register_types unless NullDB::LEGACY_ACTIVERECORD || \
-                          ActiveRecord::VERSION::MAJOR < 4
+    register_types
   end
 
   # A log of every statement that has been "executed" by this connection adapter
@@ -93,38 +92,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def remove_index(table_name, options = {})
     index_name = index_name_for_remove(table_name, options)
     index = @indexes[table_name].reject! { |index| index.name == index_name }
-  end
-
-  unless instance_methods.include? :add_index_options
-    def add_index_options(table_name, column_name, options = {})
-      column_names = Array.wrap(column_name)
-      index_name   = index_name(table_name, :column => column_names)
-
-      if Hash === options # legacy support, since this param was a string
-        index_type = options[:unique] ? "UNIQUE" : ""
-        index_name = options[:name].to_s if options.key?(:name)
-      else
-        index_type = options
-      end
-
-      if index_name.length > index_name_length
-        raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' is too long; the limit is #{index_name_length} characters"
-      end
-      if index_name_exists?(table_name, index_name, false)
-        raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' already exists"
-      end
-      index_columns = quoted_columns_for_index(column_names, options).join(", ")
-
-      [index_name, index_type, index_columns]
-    end
-  end
-
-  unless instance_methods.include? :index_name_exists?
-    def index_name_exists?(table_name, index_name, default)
-      return default unless respond_to?(:indexes)
-      index_name = index_name.to_s
-      indexes(table_name).detect { |i| i.name == index_name }
-    end
   end
 
   def add_fk_constraint(*args)
@@ -334,10 +301,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       TableDefinition.new(self, table_name, temporary: is_temporary, options: options.except(:id))
     when 5
       TableDefinition.new(table_name, is_temporary, options.except(:id), nil)
-    when 4
-      TableDefinition.new(native_database_types, table_name, is_temporary, options)
-    when 2,3
-      TableDefinition.new(adapter)
     else
       raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
     end
@@ -352,8 +315,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       if defined?(ActiveRecord::ConnectionAdapters::SqlTypeMetadata)
         meta = ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type)
         args.insert(2, meta_with_limit!(meta, col_def))
-      elsif initialize_column_with_cast_type?
-        args.insert(2, meta_with_limit!(lookup_cast_type(col_def.type), col_def))
       else
         args[2] = args[2].to_s + "(#{col_def.limit})" if col_def.limit
       end
@@ -366,44 +327,24 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   def default_column_arguments(col_def)
-    if ActiveRecord::VERSION::MAJOR >= 5
-      [
-        col_def.name.to_s,
-        col_def.default,
-        col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true 
-      ]
-    else
-      [
-        col_def.name.to_s,
-        col_def.default,
-        col_def.type,
-        col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true 
-      ]
-    end
-  end
-
-  def initialize_column_with_cast_type?
-    ::ActiveRecord::VERSION::MAJOR == 4 && ::ActiveRecord::VERSION::MINOR >= 2
+    [
+      col_def.name.to_s,
+      col_def.default,
+      col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
+    ]
   end
 
   def initialize_args
-    return [nil, @logger, @config] if ActiveRecord::VERSION::MAJOR > 3
-    [nil, @logger]
+    [nil, @logger, @config]
   end
 
-  # 4.2 introduced ActiveRecord::Type
-  # https://github.com/rails/rails/tree/4-2-stable/activerecord/lib/active_record
   def register_types
-    if ActiveRecord::VERSION::MAJOR < 5
-      type_map.register_type(:primary_key, ActiveRecord::Type::Integer.new)
-    else      
-      require 'active_model/type'
-      ActiveRecord::Type.register(
-        :primary_key,
-        ActiveModel::Type::Integer,
-        adapter: adapter_name,
-        override: true
-      )
-    end
+    require 'active_model/type'
+    ActiveRecord::Type.register(
+      :primary_key,
+      ActiveModel::Type::Integer,
+      adapter: adapter_name,
+      override: true
+    )
   end
 end
