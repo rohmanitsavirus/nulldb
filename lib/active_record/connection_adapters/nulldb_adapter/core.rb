@@ -99,12 +99,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       column_names = Array.wrap(column_name)
       index_name   = index_name(table_name, :column => column_names)
 
-      if Hash === options # legacy support, since this param was a string
-        index_type = options[:unique] ? "UNIQUE" : ""
-        index_name = options[:name].to_s if options.key?(:name)
-      else
-        index_type = options
-      end
+      index_type = options
 
       if index_name.length > index_name_length
         raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' is too long; the limit is #{index_name_length} characters"
