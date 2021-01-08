@@ -301,10 +301,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       TableDefinition.new(self, table_name, temporary: is_temporary, options: options.except(:id))
     when 5
       TableDefinition.new(table_name, is_temporary, options.except(:id), nil)
-    when 4
-      TableDefinition.new(native_database_types, table_name, is_temporary, options)
-    when 2,3
-      TableDefinition.new(adapter)
     else
       raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
     end
