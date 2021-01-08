@@ -335,8 +335,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   def initialize_args
-    return [nil, @logger, @config] if ActiveRecord::VERSION::MAJOR > 3
-    [nil, @logger]
+    [nil, @logger, @config]
   end
 
   # 4.2 introduced ActiveRecord::Type
