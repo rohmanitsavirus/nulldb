@@ -16,14 +16,14 @@ a real database.
 == Compatibility
 
 === Ruby
-Currently supported Ruby versions: MRI 2.5.x, 2.6.x, 2.7.x
+Currently supported Ruby versions: MRI 2.5.x, 2.6.x, 2.7.x, 3.X.
 
 Experimental support provided for: JRuby
 
 === ActiveRecord
-Any version of ActiveRecord >= 5
+Any version of ActiveRecord >= 5.2
 
-It is tested against AR 5.2, 6.0 and master branch.
+It is tested against AR 5.2, 6.0, 6.1 and master branch.
 
 == Installation
 
