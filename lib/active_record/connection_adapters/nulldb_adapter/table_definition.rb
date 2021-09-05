@@ -8,6 +8,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
     alias_method :geometry, :text
     alias_method :serial, :integer
     alias_method :inet, :string
+    alias_method :geography, :string
     alias_method :jsonb, :json if method_defined? :json
   end
 end
